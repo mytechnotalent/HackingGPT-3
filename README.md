@@ -215,7 +215,7 @@ tensor([[[0., 0.],
 # each position averages all previous positions (including itself)
 # loop over batches
 for b in range(B):    
-    # loop  over positions       
+    # loop over positions       
     for t in range(T):      
         # all positions from 0 to t (inclusive) 
         # shape: (t+1, C)
