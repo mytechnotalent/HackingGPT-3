@@ -1,9 +1,20 @@
+![image](https://github.com/mytechnotalent/HackingGPT-3/blob/main/HackingGPT.png?raw=true)
+
+## FREE Reverse Engineering Self-Study Course [HERE](https://github.com/mytechnotalent/Reverse-Engineering-Tutorial)
+
+<br>
+
 # HackingGPT
 ## Part 3
 Part 3 covers naive averaging with for loops, "bag of words" token aggregation, and understanding why Python loops are slow before optimizing with matrix multiplication.
 
 #### Author: [Kevin Thomas](mailto:ket189@pitt.edu)
 
+<br>
+
+## Part 2 [HERE](https://github.com/mytechnotalent/HackingGPT-2)
+
+<br><br>
 
 ```python
 import torch
