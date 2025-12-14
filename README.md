@@ -13,6 +13,7 @@ Part 3 covers naive averaging with for loops, "bag of words" token aggregation, 
 <br>
 
 ## Part 2 [HERE](https://github.com/mytechnotalent/HackingGPT-2)
+## Part 4 [HERE](https://github.com/mytechnotalent/HackingGPT-4)
 
 <br><br>
 
