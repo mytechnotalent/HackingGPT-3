@@ -74,7 +74,7 @@ torch.manual_seed(42)
 
 **Output:**
 ```
-<torch._C.Generator at 0x125c19a10>
+<torch._C.Generator at 0x11a5f5d70>
 ```
 
 
@@ -220,8 +220,18 @@ for b in range(B):
         # all positions from 0 to t (inclusive) 
         # shape: (t+1, C)
         x_previous = x[b, :t+1]
-        print(f'batch {b}, position {t}: x_previous: {x_previous}')
-        print(f'batch {b}, position {t}: x_previous shape: {x_previous.shape}') 
+        print(f'batch {b}, position {t}: x_previous:')
+        for row in x_previous:
+            print(f'   {row}')
+        print(f'batch {b}, position {t}: x_previous shape: {x_previous.shape}')
+        # show the math for each feature
+        print(f'batch {b}, position {t}: calculation:')
+        for c in range(C):
+            values = [x_previous[i, c].item() for i in range(t + 1)]
+            values_str = ' + '.join([f'{v:.4f}' for v in values])
+            total = sum(values)
+            mean = total / (t + 1)
+            print(f'   feature {c}: ({values_str}) / {t + 1} = {mean:.4f}')
         # average them → shape (C,)
         x_bow[b, t] = torch.mean(x_previous, dim=0)  
         print(f'batch {b}, position {t}: x_bow[b, t]: {x_bow[b, t]}')
@@ -231,244 +241,372 @@ for b in range(B):
 
 **Output:**
 ```
-batch 0, position 0: x_previous: tensor([[1.9269, 1.4873]])
+batch 0, position 0: x_previous:
+   tensor([1.9269, 1.4873])
 batch 0, position 0: x_previous shape: torch.Size([1, 2])
+batch 0, position 0: calculation:
+   feature 0: (1.9269) / 1 = 1.9269
+   feature 1: (1.4873) / 1 = 1.4873
 batch 0, position 0: x_bow[b, t]: tensor([1.9269, 1.4873])
 
-batch 0, position 1: x_previous: tensor([[ 1.9269,  1.4873],
-        [ 0.9007, -2.1055]])
+batch 0, position 1: x_previous:
+   tensor([1.9269, 1.4873])
+   tensor([ 0.9007, -2.1055])
 batch 0, position 1: x_previous shape: torch.Size([2, 2])
+batch 0, position 1: calculation:
+   feature 0: (1.9269 + 0.9007) / 2 = 1.4138
+   feature 1: (1.4873 + -2.1055) / 2 = -0.3091
 batch 0, position 1: x_bow[b, t]: tensor([ 1.4138, -0.3091])
 
-batch 0, position 2: x_previous: tensor([[ 1.9269,  1.4873],
-        [ 0.9007, -2.1055],
-        [ 0.6784, -1.2345]])
+batch 0, position 2: x_previous:
+   tensor([1.9269, 1.4873])
+   tensor([ 0.9007, -2.1055])
+   tensor([ 0.6784, -1.2345])
 batch 0, position 2: x_previous shape: torch.Size([3, 2])
+batch 0, position 2: calculation:
+   feature 0: (1.9269 + 0.9007 + 0.6784) / 3 = 1.1687
+   feature 1: (1.4873 + -2.1055 + -1.2345) / 3 = -0.6176
 batch 0, position 2: x_bow[b, t]: tensor([ 1.1687, -0.6176])
 
-batch 0, position 3: x_previous: tensor([[ 1.9269,  1.4873],
-        [ 0.9007, -2.1055],
-        [ 0.6784, -1.2345],
-        [-0.0431, -1.6047]])
+batch 0, position 3: x_previous:
+   tensor([1.9269, 1.4873])
+   tensor([ 0.9007, -2.1055])
+   tensor([ 0.6784, -1.2345])
+   tensor([-0.0431, -1.6047])
 batch 0, position 3: x_previous shape: torch.Size([4, 2])
+batch 0, position 3: calculation:
+   feature 0: (1.9269 + 0.9007 + 0.6784 + -0.0431) / 4 = 0.8657
+   feature 1: (1.4873 + -2.1055 + -1.2345 + -1.6047) / 4 = -0.8644
 batch 0, position 3: x_bow[b, t]: tensor([ 0.8657, -0.8644])
 
-batch 0, position 4: x_previous: tensor([[ 1.9269,  1.4873],
-        [ 0.9007, -2.1055],
-        [ 0.6784, -1.2345],
-        [-0.0431, -1.6047],
-        [-0.7521,  1.6487]])
+batch 0, position 4: x_previous:
+   tensor([1.9269, 1.4873])
+   tensor([ 0.9007, -2.1055])
+   tensor([ 0.6784, -1.2345])
+   tensor([-0.0431, -1.6047])
+   tensor([-0.7521,  1.6487])
 batch 0, position 4: x_previous shape: torch.Size([5, 2])
+batch 0, position 4: calculation:
+   feature 0: (1.9269 + 0.9007 + 0.6784 + -0.0431 + -0.7521) / 5 = 0.5422
+   feature 1: (1.4873 + -2.1055 + -1.2345 + -1.6047 + 1.6487) / 5 = -0.3617
 batch 0, position 4: x_bow[b, t]: tensor([ 0.5422, -0.3617])
 
-batch 0, position 5: x_previous: tensor([[ 1.9269,  1.4873],
-        [ 0.9007, -2.1055],
-        [ 0.6784, -1.2345],
-        [-0.0431, -1.6047],
-        [-0.7521,  1.6487],
-        [-0.3925, -1.4036]])
+batch 0, position 5: x_previous:
+   tensor([1.9269, 1.4873])
+   tensor([ 0.9007, -2.1055])
+   tensor([ 0.6784, -1.2345])
+   tensor([-0.0431, -1.6047])
+   tensor([-0.7521,  1.6487])
+   tensor([-0.3925, -1.4036])
 batch 0, position 5: x_previous shape: torch.Size([6, 2])
+batch 0, position 5: calculation:
+   feature 0: (1.9269 + 0.9007 + 0.6784 + -0.0431 + -0.7521 + -0.3925) / 6 = 0.3864
+   feature 1: (1.4873 + -2.1055 + -1.2345 + -1.6047 + 1.6487 + -1.4036) / 6 = -0.5354
 batch 0, position 5: x_bow[b, t]: tensor([ 0.3864, -0.5354])
 
-batch 0, position 6: x_previous: tensor([[ 1.9269,  1.4873],
-        [ 0.9007, -2.1055],
-        [ 0.6784, -1.2345],
-        [-0.0431, -1.6047],
-        [-0.7521,  1.6487],
-        [-0.3925, -1.4036],
-        [-0.7279, -0.5594]])
+batch 0, position 6: x_previous:
+   tensor([1.9269, 1.4873])
+   tensor([ 0.9007, -2.1055])
+   tensor([ 0.6784, -1.2345])
+   tensor([-0.0431, -1.6047])
+   tensor([-0.7521,  1.6487])
+   tensor([-0.3925, -1.4036])
+   tensor([-0.7279, -0.5594])
 batch 0, position 6: x_previous shape: torch.Size([7, 2])
+batch 0, position 6: calculation:
+   feature 0: (1.9269 + 0.9007 + 0.6784 + -0.0431 + -0.7521 + -0.3925 + -0.7279) / 7 = 0.2272
+   feature 1: (1.4873 + -2.1055 + -1.2345 + -1.6047 + 1.6487 + -1.4036 + -0.5594) / 7 = -0.5388
 batch 0, position 6: x_bow[b, t]: tensor([ 0.2272, -0.5388])
 
-batch 0, position 7: x_previous: tensor([[ 1.9269,  1.4873],
-        [ 0.9007, -2.1055],
-        [ 0.6784, -1.2345],
-        [-0.0431, -1.6047],
-        [-0.7521,  1.6487],
-        [-0.3925, -1.4036],
-        [-0.7279, -0.5594],
-        [-0.7688,  0.7624]])
+batch 0, position 7: x_previous:
+   tensor([1.9269, 1.4873])
+   tensor([ 0.9007, -2.1055])
+   tensor([ 0.6784, -1.2345])
+   tensor([-0.0431, -1.6047])
+   tensor([-0.7521,  1.6487])
+   tensor([-0.3925, -1.4036])
+   tensor([-0.7279, -0.5594])
+   tensor([-0.7688,  0.7624])
 batch 0, position 7: x_previous shape: torch.Size([8, 2])
+batch 0, position 7: calculation:
+   feature 0: (1.9269 + 0.9007 + 0.6784 + -0.0431 + -0.7521 + -0.3925 + -0.7279 + -0.7688) / 8 = 0.1027
+   feature 1: (1.4873 + -2.1055 + -1.2345 + -1.6047 + 1.6487 + -1.4036 + -0.5594 + 0.7624) / 8 = -0.3762
 batch 0, position 7: x_bow[b, t]: tensor([ 0.1027, -0.3762])
 
-batch 1, position 0: x_previous: tensor([[ 1.6423, -0.1596]])
+batch 1, position 0: x_previous:
+   tensor([ 1.6423, -0.1596])
 batch 1, position 0: x_previous shape: torch.Size([1, 2])
+batch 1, position 0: calculation:
+   feature 0: (1.6423) / 1 = 1.6423
+   feature 1: (-0.1596) / 1 = -0.1596
 batch 1, position 0: x_bow[b, t]: tensor([ 1.6423, -0.1596])
 
-batch 1, position 1: x_previous: tensor([[ 1.6423, -0.1596],
-        [-0.4974,  0.4396]])
+batch 1, position 1: x_previous:
+   tensor([ 1.6423, -0.1596])
+   tensor([-0.4974,  0.4396])
 batch 1, position 1: x_previous shape: torch.Size([2, 2])
+batch 1, position 1: calculation:
+   feature 0: (1.6423 + -0.4974) / 2 = 0.5725
+   feature 1: (-0.1596 + 0.4396) / 2 = 0.1400
 batch 1, position 1: x_bow[b, t]: tensor([0.5725, 0.1400])
 
-batch 1, position 2: x_previous: tensor([[ 1.6423, -0.1596],
-        [-0.4974,  0.4396],
-        [-0.7581,  1.0783]])
+batch 1, position 2: x_previous:
+   tensor([ 1.6423, -0.1596])
+   tensor([-0.4974,  0.4396])
+   tensor([-0.7581,  1.0783])
 batch 1, position 2: x_previous shape: torch.Size([3, 2])
+batch 1, position 2: calculation:
+   feature 0: (1.6423 + -0.4974 + -0.7581) / 3 = 0.1289
+   feature 1: (-0.1596 + 0.4396 + 1.0783) / 3 = 0.4528
 batch 1, position 2: x_bow[b, t]: tensor([0.1289, 0.4528])
 
-batch 1, position 3: x_previous: tensor([[ 1.6423, -0.1596],
-        [-0.4974,  0.4396],
-        [-0.7581,  1.0783],
-        [ 0.8008,  1.6806]])
+batch 1, position 3: x_previous:
+   tensor([ 1.6423, -0.1596])
+   tensor([-0.4974,  0.4396])
+   tensor([-0.7581,  1.0783])
+   tensor([0.8008, 1.6806])
 batch 1, position 3: x_previous shape: torch.Size([4, 2])
+batch 1, position 3: calculation:
+   feature 0: (1.6423 + -0.4974 + -0.7581 + 0.8008) / 4 = 0.2969
+   feature 1: (-0.1596 + 0.4396 + 1.0783 + 1.6806) / 4 = 0.7597
 batch 1, position 3: x_bow[b, t]: tensor([0.2969, 0.7597])
 
-batch 1, position 4: x_previous: tensor([[ 1.6423, -0.1596],
-        [-0.4974,  0.4396],
-        [-0.7581,  1.0783],
-        [ 0.8008,  1.6806],
-        [ 1.2791,  1.2964]])
+batch 1, position 4: x_previous:
+   tensor([ 1.6423, -0.1596])
+   tensor([-0.4974,  0.4396])
+   tensor([-0.7581,  1.0783])
+   tensor([0.8008, 1.6806])
+   tensor([1.2791, 1.2964])
 batch 1, position 4: x_previous shape: torch.Size([5, 2])
+batch 1, position 4: calculation:
+   feature 0: (1.6423 + -0.4974 + -0.7581 + 0.8008 + 1.2791) / 5 = 0.4933
+   feature 1: (-0.1596 + 0.4396 + 1.0783 + 1.6806 + 1.2964) / 5 = 0.8671
 batch 1, position 4: x_bow[b, t]: tensor([0.4933, 0.8671])
 
-batch 1, position 5: x_previous: tensor([[ 1.6423, -0.1596],
-        [-0.4974,  0.4396],
-        [-0.7581,  1.0783],
-        [ 0.8008,  1.6806],
-        [ 1.2791,  1.2964],
-        [ 0.6105,  1.3347]])
+batch 1, position 5: x_previous:
+   tensor([ 1.6423, -0.1596])
+   tensor([-0.4974,  0.4396])
+   tensor([-0.7581,  1.0783])
+   tensor([0.8008, 1.6806])
+   tensor([1.2791, 1.2964])
+   tensor([0.6105, 1.3347])
 batch 1, position 5: x_previous shape: torch.Size([6, 2])
+batch 1, position 5: calculation:
+   feature 0: (1.6423 + -0.4974 + -0.7581 + 0.8008 + 1.2791 + 0.6105) / 6 = 0.5129
+   feature 1: (-0.1596 + 0.4396 + 1.0783 + 1.6806 + 1.2964 + 1.3347) / 6 = 0.9450
 batch 1, position 5: x_bow[b, t]: tensor([0.5129, 0.9450])
 
-batch 1, position 6: x_previous: tensor([[ 1.6423, -0.1596],
-        [-0.4974,  0.4396],
-        [-0.7581,  1.0783],
-        [ 0.8008,  1.6806],
-        [ 1.2791,  1.2964],
-        [ 0.6105,  1.3347],
-        [-0.2316,  0.0418]])
+batch 1, position 6: x_previous:
+   tensor([ 1.6423, -0.1596])
+   tensor([-0.4974,  0.4396])
+   tensor([-0.7581,  1.0783])
+   tensor([0.8008, 1.6806])
+   tensor([1.2791, 1.2964])
+   tensor([0.6105, 1.3347])
+   tensor([-0.2316,  0.0418])
 batch 1, position 6: x_previous shape: torch.Size([7, 2])
+batch 1, position 6: calculation:
+   feature 0: (1.6423 + -0.4974 + -0.7581 + 0.8008 + 1.2791 + 0.6105 + -0.2316) / 7 = 0.4065
+   feature 1: (-0.1596 + 0.4396 + 1.0783 + 1.6806 + 1.2964 + 1.3347 + 0.0418) / 7 = 0.8160
 batch 1, position 6: x_bow[b, t]: tensor([0.4065, 0.8160])
 
-batch 1, position 7: x_previous: tensor([[ 1.6423, -0.1596],
-        [-0.4974,  0.4396],
-        [-0.7581,  1.0783],
-        [ 0.8008,  1.6806],
-        [ 1.2791,  1.2964],
-        [ 0.6105,  1.3347],
-        [-0.2316,  0.0418],
-        [-0.2516,  0.8599]])
+batch 1, position 7: x_previous:
+   tensor([ 1.6423, -0.1596])
+   tensor([-0.4974,  0.4396])
+   tensor([-0.7581,  1.0783])
+   tensor([0.8008, 1.6806])
+   tensor([1.2791, 1.2964])
+   tensor([0.6105, 1.3347])
+   tensor([-0.2316,  0.0418])
+   tensor([-0.2516,  0.8599])
 batch 1, position 7: x_previous shape: torch.Size([8, 2])
+batch 1, position 7: calculation:
+   feature 0: (1.6423 + -0.4974 + -0.7581 + 0.8008 + 1.2791 + 0.6105 + -0.2316 + -0.2516) / 8 = 0.3242
+   feature 1: (-0.1596 + 0.4396 + 1.0783 + 1.6806 + 1.2964 + 1.3347 + 0.0418 + 0.8599) / 8 = 0.8215
 batch 1, position 7: x_bow[b, t]: tensor([0.3242, 0.8215])
 
-batch 2, position 0: x_previous: tensor([[-1.3847, -0.8712]])
+batch 2, position 0: x_previous:
+   tensor([-1.3847, -0.8712])
 batch 2, position 0: x_previous shape: torch.Size([1, 2])
+batch 2, position 0: calculation:
+   feature 0: (-1.3847) / 1 = -1.3847
+   feature 1: (-0.8712) / 1 = -0.8712
 batch 2, position 0: x_bow[b, t]: tensor([-1.3847, -0.8712])
 
-batch 2, position 1: x_previous: tensor([[-1.3847, -0.8712],
-        [-0.2234,  1.7174]])
+batch 2, position 1: x_previous:
+   tensor([-1.3847, -0.8712])
+   tensor([-0.2234,  1.7174])
 batch 2, position 1: x_previous shape: torch.Size([2, 2])
+batch 2, position 1: calculation:
+   feature 0: (-1.3847 + -0.2234) / 2 = -0.8040
+   feature 1: (-0.8712 + 1.7174) / 2 = 0.4231
 batch 2, position 1: x_bow[b, t]: tensor([-0.8040,  0.4231])
 
-batch 2, position 2: x_previous: tensor([[-1.3847, -0.8712],
-        [-0.2234,  1.7174],
-        [ 0.3189, -0.4245]])
+batch 2, position 2: x_previous:
+   tensor([-1.3847, -0.8712])
+   tensor([-0.2234,  1.7174])
+   tensor([ 0.3189, -0.4245])
 batch 2, position 2: x_previous shape: torch.Size([3, 2])
+batch 2, position 2: calculation:
+   feature 0: (-1.3847 + -0.2234 + 0.3189) / 3 = -0.4297
+   feature 1: (-0.8712 + 1.7174 + -0.4245) / 3 = 0.1405
 batch 2, position 2: x_bow[b, t]: tensor([-0.4297,  0.1405])
 
-batch 2, position 3: x_previous: tensor([[-1.3847, -0.8712],
-        [-0.2234,  1.7174],
-        [ 0.3189, -0.4245],
-        [ 0.3057, -0.7746]])
+batch 2, position 3: x_previous:
+   tensor([-1.3847, -0.8712])
+   tensor([-0.2234,  1.7174])
+   tensor([ 0.3189, -0.4245])
+   tensor([ 0.3057, -0.7746])
 batch 2, position 3: x_previous shape: torch.Size([4, 2])
+batch 2, position 3: calculation:
+   feature 0: (-1.3847 + -0.2234 + 0.3189 + 0.3057) / 4 = -0.2459
+   feature 1: (-0.8712 + 1.7174 + -0.4245 + -0.7746) / 4 = -0.0882
 batch 2, position 3: x_bow[b, t]: tensor([-0.2459, -0.0882])
 
-batch 2, position 4: x_previous: tensor([[-1.3847, -0.8712],
-        [-0.2234,  1.7174],
-        [ 0.3189, -0.4245],
-        [ 0.3057, -0.7746],
-        [-1.5576,  0.9956]])
+batch 2, position 4: x_previous:
+   tensor([-1.3847, -0.8712])
+   tensor([-0.2234,  1.7174])
+   tensor([ 0.3189, -0.4245])
+   tensor([ 0.3057, -0.7746])
+   tensor([-1.5576,  0.9956])
 batch 2, position 4: x_previous shape: torch.Size([5, 2])
+batch 2, position 4: calculation:
+   feature 0: (-1.3847 + -0.2234 + 0.3189 + 0.3057 + -1.5576) / 5 = -0.5082
+   feature 1: (-0.8712 + 1.7174 + -0.4245 + -0.7746 + 0.9956) / 5 = 0.1285
 batch 2, position 4: x_bow[b, t]: tensor([-0.5082,  0.1285])
 
-batch 2, position 5: x_previous: tensor([[-1.3847, -0.8712],
-        [-0.2234,  1.7174],
-        [ 0.3189, -0.4245],
-        [ 0.3057, -0.7746],
-        [-1.5576,  0.9956],
-        [-0.8798, -0.6011]])
+batch 2, position 5: x_previous:
+   tensor([-1.3847, -0.8712])
+   tensor([-0.2234,  1.7174])
+   tensor([ 0.3189, -0.4245])
+   tensor([ 0.3057, -0.7746])
+   tensor([-1.5576,  0.9956])
+   tensor([-0.8798, -0.6011])
 batch 2, position 5: x_previous shape: torch.Size([6, 2])
+batch 2, position 5: calculation:
+   feature 0: (-1.3847 + -0.2234 + 0.3189 + 0.3057 + -1.5576 + -0.8798) / 6 = -0.5701
+   feature 1: (-0.8712 + 1.7174 + -0.4245 + -0.7746 + 0.9956 + -0.6011) / 6 = 0.0069
 batch 2, position 5: x_bow[b, t]: tensor([-0.5701,  0.0069])
 
-batch 2, position 6: x_previous: tensor([[-1.3847, -0.8712],
-        [-0.2234,  1.7174],
-        [ 0.3189, -0.4245],
-        [ 0.3057, -0.7746],
-        [-1.5576,  0.9956],
-        [-0.8798, -0.6011],
-        [-1.2742,  2.1228]])
+batch 2, position 6: x_previous:
+   tensor([-1.3847, -0.8712])
+   tensor([-0.2234,  1.7174])
+   tensor([ 0.3189, -0.4245])
+   tensor([ 0.3057, -0.7746])
+   tensor([-1.5576,  0.9956])
+   tensor([-0.8798, -0.6011])
+   tensor([-1.2742,  2.1228])
 batch 2, position 6: x_previous shape: torch.Size([7, 2])
+batch 2, position 6: calculation:
+   feature 0: (-1.3847 + -0.2234 + 0.3189 + 0.3057 + -1.5576 + -0.8798 + -1.2742) / 7 = -0.6707
+   feature 1: (-0.8712 + 1.7174 + -0.4245 + -0.7746 + 0.9956 + -0.6011 + 2.1228) / 7 = 0.3092
 batch 2, position 6: x_bow[b, t]: tensor([-0.6707,  0.3092])
 
-batch 2, position 7: x_previous: tensor([[-1.3847, -0.8712],
-        [-0.2234,  1.7174],
-        [ 0.3189, -0.4245],
-        [ 0.3057, -0.7746],
-        [-1.5576,  0.9956],
-        [-0.8798, -0.6011],
-        [-1.2742,  2.1228],
-        [-1.2347, -0.4879]])
+batch 2, position 7: x_previous:
+   tensor([-1.3847, -0.8712])
+   tensor([-0.2234,  1.7174])
+   tensor([ 0.3189, -0.4245])
+   tensor([ 0.3057, -0.7746])
+   tensor([-1.5576,  0.9956])
+   tensor([-0.8798, -0.6011])
+   tensor([-1.2742,  2.1228])
+   tensor([-1.2347, -0.4879])
 batch 2, position 7: x_previous shape: torch.Size([8, 2])
+batch 2, position 7: calculation:
+   feature 0: (-1.3847 + -0.2234 + 0.3189 + 0.3057 + -1.5576 + -0.8798 + -1.2742 + -1.2347) / 8 = -0.7412
+   feature 1: (-0.8712 + 1.7174 + -0.4245 + -0.7746 + 0.9956 + -0.6011 + 2.1228 + -0.4879) / 8 = 0.2095
 batch 2, position 7: x_bow[b, t]: tensor([-0.7412,  0.2095])
 
-batch 3, position 0: x_previous: tensor([[-0.9138, -0.6581]])
+batch 3, position 0: x_previous:
+   tensor([-0.9138, -0.6581])
 batch 3, position 0: x_previous shape: torch.Size([1, 2])
+batch 3, position 0: calculation:
+   feature 0: (-0.9138) / 1 = -0.9138
+   feature 1: (-0.6581) / 1 = -0.6581
 batch 3, position 0: x_bow[b, t]: tensor([-0.9138, -0.6581])
 
-batch 3, position 1: x_previous: tensor([[-0.9138, -0.6581],
-        [ 0.0780,  0.5258]])
+batch 3, position 1: x_previous:
+   tensor([-0.9138, -0.6581])
+   tensor([0.0780, 0.5258])
 batch 3, position 1: x_previous shape: torch.Size([2, 2])
+batch 3, position 1: calculation:
+   feature 0: (-0.9138 + 0.0780) / 2 = -0.4179
+   feature 1: (-0.6581 + 0.5258) / 2 = -0.0662
 batch 3, position 1: x_bow[b, t]: tensor([-0.4179, -0.0662])
 
-batch 3, position 2: x_previous: tensor([[-0.9138, -0.6581],
-        [ 0.0780,  0.5258],
-        [-0.4880,  1.1914]])
+batch 3, position 2: x_previous:
+   tensor([-0.9138, -0.6581])
+   tensor([0.0780, 0.5258])
+   tensor([-0.4880,  1.1914])
 batch 3, position 2: x_previous shape: torch.Size([3, 2])
+batch 3, position 2: calculation:
+   feature 0: (-0.9138 + 0.0780 + -0.4880) / 3 = -0.4413
+   feature 1: (-0.6581 + 0.5258 + 1.1914) / 3 = 0.3530
 batch 3, position 2: x_bow[b, t]: tensor([-0.4413,  0.3530])
 
-batch 3, position 3: x_previous: tensor([[-0.9138, -0.6581],
-        [ 0.0780,  0.5258],
-        [-0.4880,  1.1914],
-        [-0.8140, -0.7360]])
+batch 3, position 3: x_previous:
+   tensor([-0.9138, -0.6581])
+   tensor([0.0780, 0.5258])
+   tensor([-0.4880,  1.1914])
+   tensor([-0.8140, -0.7360])
 batch 3, position 3: x_previous shape: torch.Size([4, 2])
+batch 3, position 3: calculation:
+   feature 0: (-0.9138 + 0.0780 + -0.4880 + -0.8140) / 4 = -0.5344
+   feature 1: (-0.6581 + 0.5258 + 1.1914 + -0.7360) / 4 = 0.0808
 batch 3, position 3: x_bow[b, t]: tensor([-0.5344,  0.0808])
 
-batch 3, position 4: x_previous: tensor([[-0.9138, -0.6581],
-        [ 0.0780,  0.5258],
-        [-0.4880,  1.1914],
-        [-0.8140, -0.7360],
-        [-1.4032,  0.0360]])
+batch 3, position 4: x_previous:
+   tensor([-0.9138, -0.6581])
+   tensor([0.0780, 0.5258])
+   tensor([-0.4880,  1.1914])
+   tensor([-0.8140, -0.7360])
+   tensor([-1.4032,  0.0360])
 batch 3, position 4: x_previous shape: torch.Size([5, 2])
+batch 3, position 4: calculation:
+   feature 0: (-0.9138 + 0.0780 + -0.4880 + -0.8140 + -1.4032) / 5 = -0.7082
+   feature 1: (-0.6581 + 0.5258 + 1.1914 + -0.7360 + 0.0360) / 5 = 0.0718
 batch 3, position 4: x_bow[b, t]: tensor([-0.7082,  0.0718])
 
-batch 3, position 5: x_previous: tensor([[-0.9138, -0.6581],
-        [ 0.0780,  0.5258],
-        [-0.4880,  1.1914],
-        [-0.8140, -0.7360],
-        [-1.4032,  0.0360],
-        [-0.0635,  0.6756]])
+batch 3, position 5: x_previous:
+   tensor([-0.9138, -0.6581])
+   tensor([0.0780, 0.5258])
+   tensor([-0.4880,  1.1914])
+   tensor([-0.8140, -0.7360])
+   tensor([-1.4032,  0.0360])
+   tensor([-0.0635,  0.6756])
 batch 3, position 5: x_previous shape: torch.Size([6, 2])
+batch 3, position 5: calculation:
+   feature 0: (-0.9138 + 0.0780 + -0.4880 + -0.8140 + -1.4032 + -0.0635) / 6 = -0.6008
+   feature 1: (-0.6581 + 0.5258 + 1.1914 + -0.7360 + 0.0360 + 0.6756) / 6 = 0.1724
 batch 3, position 5: x_bow[b, t]: tensor([-0.6008,  0.1724])
 
-batch 3, position 6: x_previous: tensor([[-0.9138, -0.6581],
-        [ 0.0780,  0.5258],
-        [-0.4880,  1.1914],
-        [-0.8140, -0.7360],
-        [-1.4032,  0.0360],
-        [-0.0635,  0.6756],
-        [-0.0978,  1.8446]])
+batch 3, position 6: x_previous:
+   tensor([-0.9138, -0.6581])
+   tensor([0.0780, 0.5258])
+   tensor([-0.4880,  1.1914])
+   tensor([-0.8140, -0.7360])
+   tensor([-1.4032,  0.0360])
+   tensor([-0.0635,  0.6756])
+   tensor([-0.0978,  1.8446])
 batch 3, position 6: x_previous shape: torch.Size([7, 2])
+batch 3, position 6: calculation:
+   feature 0: (-0.9138 + 0.0780 + -0.4880 + -0.8140 + -1.4032 + -0.0635 + -0.0978) / 7 = -0.5289
+   feature 1: (-0.6581 + 0.5258 + 1.1914 + -0.7360 + 0.0360 + 0.6756 + 1.8446) / 7 = 0.4113
 batch 3, position 6: x_bow[b, t]: tensor([-0.5289,  0.4113])
 
-batch 3, position 7: x_previous: tensor([[-0.9138, -0.6581],
-        [ 0.0780,  0.5258],
-        [-0.4880,  1.1914],
-        [-0.8140, -0.7360],
-        [-1.4032,  0.0360],
-        [-0.0635,  0.6756],
-        [-0.0978,  1.8446],
-        [-1.1845,  1.3835]])
+batch 3, position 7: x_previous:
+   tensor([-0.9138, -0.6581])
+   tensor([0.0780, 0.5258])
+   tensor([-0.4880,  1.1914])
+   tensor([-0.8140, -0.7360])
+   tensor([-1.4032,  0.0360])
+   tensor([-0.0635,  0.6756])
+   tensor([-0.0978,  1.8446])
+   tensor([-1.1845,  1.3835])
 batch 3, position 7: x_previous shape: torch.Size([8, 2])
+batch 3, position 7: calculation:
+   feature 0: (-0.9138 + 0.0780 + -0.4880 + -0.8140 + -1.4032 + -0.0635 + -0.0978 + -1.1845) / 8 = -0.6109
+   feature 1: (-0.6581 + 0.5258 + 1.1914 + -0.7360 + 0.0360 + 0.6756 + 1.8446 + 1.3835) / 8 = 0.5329
 batch 3, position 7: x_bow[b, t]: tensor([-0.6109,  0.5329])
 
 
